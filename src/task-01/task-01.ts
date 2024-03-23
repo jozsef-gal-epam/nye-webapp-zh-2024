@@ -1,6 +1,6 @@
 export function arraySum(input: any): number {
   let sum = 0;
-
+//javitott
   const traverseArray = (element: any) => {
     if (Array.isArray(element)) {
 

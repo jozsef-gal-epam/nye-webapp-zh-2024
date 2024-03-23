@@ -1,5 +1,5 @@
 import { Points, RPSInput, Shape, Outcome } from './models/rock-paper-scissors';
-
+//4
 export const rockPaperScissors = (gameSet: readonly RPSInput[]): number => {
   const determineShapeBasedOnOutcome = (gameOutcome: Outcome, opponentShape: Shape): Shape => {
     const winningShapeMap: Record<Shape, Shape> = {

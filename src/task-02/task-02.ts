@@ -4,5 +4,14 @@ export interface Item {
 }
 
 export const uniqueFilter = (array: Item[]): Item[] => {
-  throw new Error('Not implemented');
+  const receivedItems :Item[] = [];
+  
+  array.forEach((item) => {
+    if (!(receivedItems.some((givenItem) => givenItem.id === item.id))) {
+      receivedItems.push(item);
+    }
+  });
+
+  return receivedItems;
+
 };

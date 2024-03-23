@@ -9,7 +9,7 @@ const DEFAULT_DIRECTION: Direction = 'ASC';
 
 export const searchMovies = async (params: SearchParams): Promise<SearchResults> => {
   try {
-    
+
     const query: string = (params.query || '').toLowerCase().trim();
     const genresToFilter: Genre[] = params.genre || [];
     const limit: number = params.limit ?? DEFAULT_LIMIT;

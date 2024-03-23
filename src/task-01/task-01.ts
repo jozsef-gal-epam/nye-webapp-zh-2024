@@ -3,7 +3,7 @@ export function arraySum(input: any): number {
 
   const traverseArray = (element: any) => {
     if (Array.isArray(element)) {
-      
+
       element.forEach(item => traverseArray(item));
     } else if (typeof element === 'number' && !isNaN(element)) {
       

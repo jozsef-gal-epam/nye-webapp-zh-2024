@@ -4,5 +4,9 @@ export interface Item {
 }
 
 export const uniqueFilter = (array: Item[]): Item[] => {
-  throw new Error('Not implemented');
+  return array.filter((item, index, self) =>
+  index === self.findIndex((t) => (
+    t.id === item.id && t.name === item.name
+  ))
+);
 };

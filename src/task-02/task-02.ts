@@ -3,6 +3,16 @@ export interface Item {
   name: string;
 }
 
-export const uniqueFilter = (array: Item[]): Item[] => {
-  throw new Error('Not implemented');
-};
+export function uniqueFilter(items: Item[]): Item[] {
+  const uniqueItems: Item[] = [];
+  const seenIds: { [key: number]: boolean } = {};
+
+  for (const item of items) {
+      if (!seenIds[item.id]) {
+          uniqueItems.push(item);
+          seenIds[item.id] = true;
+      }
+  }
+
+  return uniqueItems;
+}

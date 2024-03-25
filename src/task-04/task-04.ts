@@ -6,7 +6,22 @@ export const rockPaperScissors = (gameSet: readonly RPSInput[]): number => {
   for (const game of gameSet) {
     const { shape, outcome } = game;
 
-    const opponentShape = shape === Shape.ROCK ? Shape.SCISSORS : shape === Shape.PAPER ? Shape.ROCK : Shape.PAPER;
+    let opponentShape: Shape;
+
+    switch (shape) {
+      case Shape.ROCK:
+        opponentShape = Shape.SCISSORS;
+        break;
+      case Shape.PAPER:
+        opponentShape = Shape.ROCK;
+        break;
+      case Shape.SCISSORS:
+        opponentShape = Shape.PAPER;
+        break;
+      default:
+        throw new Error('Invalid shape provided');
+    }
+
     const pointsFromOutcome = Points.get(outcome) ?? 0;
 
     totalPoints += Points.get(shape) ?? 0;

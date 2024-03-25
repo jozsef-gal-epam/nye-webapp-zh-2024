@@ -6,18 +6,18 @@ export interface Item {
 export const uniqueFilter = (array: Item[]): Item[] => {
   const uniqueArray: Item[] = [];
   
-    for (const item of array) {
-      let isUnique = true;
-      for (const uniqueItem of uniqueArray) {
-        if (item.id === uniqueItem.id) {
-          isUnique = false;
-          break;
-        }
-      }
-      if (isUnique) {
-        uniqueArray.push(item);
+  for (let i = 0; i < array.length; i++) {
+    let isUnique = true;
+    for (let j = 0; j < uniqueArray.length; j++) {
+      if (array[i].id === uniqueArray[j].id) {
+        isUnique = false;
+        break;
       }
     }
-  
-    return uniqueArray;
+    if (isUnique) {
+      uniqueArray.push(array[i]);
+    }
+  }
+
+  return uniqueArray;
 };

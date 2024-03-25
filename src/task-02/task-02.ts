@@ -5,7 +5,7 @@ export interface Item {
 
 export const uniqueFilter = (array: Item[]): Item[] => {
   const uniqueArray: Item[] = [];
-  
+
   for (let i = 0; i < array.length; i++) {
     let isUnique = true;
     for (let j = 0; j < uniqueArray.length; j++) {

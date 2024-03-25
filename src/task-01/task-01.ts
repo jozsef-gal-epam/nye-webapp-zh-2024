@@ -2,7 +2,7 @@ type Input = Array<any>;
 
 export const arraySum = (input: Input): number => {
   let sum = 0;
-
+  
   const sumNumbers = (arr: any[]): void => {
     for (const item of arr) {
       if (typeof item === 'number' && !isNaN(item)) {

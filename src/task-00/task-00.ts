@@ -1,3 +1,5 @@
 export const oddsAndEvens = (num: number): 'odd' | 'even' => {
-  throw new Error('Not implemented');
+  if(num%2 === 0) {
+    return 'even';
+  } else return 'odd';
 };

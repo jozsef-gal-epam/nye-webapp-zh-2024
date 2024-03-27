@@ -19,7 +19,7 @@ const sortByOrder = (movies: Movie[], orderBy: OrderBy, direction: Direction): M
       const dateB = b.release_date ? new Date(b.release_date).getTime() : 0;
       result = dateA - dateB;
     } else if (orderBy === 'vote_average') {
-      result = (a.vote_average || 0) - (b.vote_average || 0); // Corrected sorting by vote_average
+      result = (a.vote_average || 0) - (b.vote_average || 0); 
     }
 
     return direction === 'ASC' ? result : -result;
@@ -38,27 +38,15 @@ export const searchMovies = async (params: SearchParams): Promise<SearchResults>
 
     const movies = await MovieService.getMovies();
 
-    let filteredMovies: Movie[] = [];
-    const filteredIds = new Set<number>(); 
-    for (const movie of movies) {
-      const isMatchingTitle = movie.title.toLowerCase().includes(query.toLowerCase());
-      const isMatchingOverview = movie.overview.toLowerCase().includes(query.toLowerCase());
-      const isMatchingGenre = genre.length === 0 || genre.some(g => movie.genres?.includes(g));
+    const filteredMovies = movies.filter(movie =>
+      (query === '' || movie.title.toLowerCase().includes(query.toLowerCase()) || movie.overview.toLowerCase().includes(query.toLowerCase())) &&
+      (genre.length === 0 || genre.some(g => movie.genres?.includes(g)))
+    );
 
-      if ((isMatchingTitle || isMatchingOverview) && isMatchingGenre && !filteredIds.has(movie.id)) {
-        filteredMovies.push(movie);
-        filteredIds.add(movie.id);
-      }
-    }
+    const sortedMovies = sortByOrder(filteredMovies, orderBy, direction);
+    const paginatedMovies = paginateResults(sortedMovies, offset, limit);
 
-    
-    filteredMovies = sortByOrder(filteredMovies, orderBy, direction);
-
-    const total = filteredMovies.length; 
-
-    const paginatedMovies = paginateResults(filteredMovies, offset, limit);
-
-    return { total, movies: paginatedMovies };
+    return { total: filteredMovies.length, movies: paginatedMovies };
   } catch (error) {
     console.error('An error occurred while searching for movies:', error);
     return { total: 0, movies: [] };

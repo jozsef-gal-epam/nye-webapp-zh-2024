@@ -1,4 +1,4 @@
-import { Movie, SearchParams, SearchResults, Direction, Genre, OrderBy } from './models';
+import { Movie, SearchParams, SearchResults, Direction, OrderBy } from './models';
 import { MovieService } from './services';
 
 const DEFAULTS = {
@@ -19,9 +19,7 @@ const sortByOrder = (movies: Movie[], orderBy: OrderBy, direction: Direction): M
       const dateB = b.release_date ? new Date(b.release_date).getTime() : 0;
       result = dateA - dateB;
     } else if (orderBy === 'vote_average') {
-      result = (b.vote_average || 0) - (a.vote_average || 0);
-
-      
+      result = (a.vote_average || 0) - (b.vote_average || 0); // Corrected sorting by vote_average
     }
 
     return direction === 'ASC' ? result : -result;
@@ -40,15 +38,27 @@ export const searchMovies = async (params: SearchParams): Promise<SearchResults>
 
     const movies = await MovieService.getMovies();
 
-    const filteredMovies = movies.filter(movie =>
-      (!query || movie.title.toLowerCase().includes(query.toLowerCase())) &&
-      (!genre.length || genre.some(g => movie.genres?.includes(g)))
-    );
+    let filteredMovies: Movie[] = [];
+    const filteredIds = new Set<number>(); 
+    for (const movie of movies) {
+      const isMatchingTitle = movie.title.toLowerCase().includes(query.toLowerCase());
+      const isMatchingOverview = movie.overview.toLowerCase().includes(query.toLowerCase());
+      const isMatchingGenre = genre.length === 0 || genre.some(g => movie.genres?.includes(g));
 
-    const sortedMovies = sortByOrder(filteredMovies, orderBy, direction);
-    const paginatedMovies = paginateResults(sortedMovies, offset, limit);
+      if ((isMatchingTitle || isMatchingOverview) && isMatchingGenre && !filteredIds.has(movie.id)) {
+        filteredMovies.push(movie);
+        filteredIds.add(movie.id);
+      }
+    }
 
-    return { total: filteredMovies.length, movies: paginatedMovies };
+    
+    filteredMovies = sortByOrder(filteredMovies, orderBy, direction);
+
+    const total = filteredMovies.length; 
+
+    const paginatedMovies = paginateResults(filteredMovies, offset, limit);
+
+    return { total, movies: paginatedMovies };
   } catch (error) {
     console.error('An error occurred while searching for movies:', error);
     return { total: 0, movies: [] };

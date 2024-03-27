@@ -4,5 +4,14 @@ export interface Item {
 }
 
 export const uniqueFilter = (array: Item[]): Item[] => {
-  throw new Error('Not implemented');
+  const seen: Set<string> = new Set();
+    return array.filter(obj => {
+      const serialized: string = JSON.stringify(obj);
+      if (seen.has(serialized)) {
+        return false;
+      }
+      
+      seen.add(serialized);
+      return true;
+    })
 };

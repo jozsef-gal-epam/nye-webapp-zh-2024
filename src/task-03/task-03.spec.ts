@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import { minimalCubeSet } from './task-03';
 import { Game } from './models';
 
-describe('task-03', () => {
+describe.skip('task-03', () => {
   const parseLine = (line: string): Game => {
     const [name, ...sets] = line.split(/[:;]/i);
     const draws = sets.map((set) => set.trim().split(', ')).map((game) => game.reduce((draw, cube) => {

@@ -1,6 +1,6 @@
 
 type Input = Array<any>;
-//javitott
+//
 
 export const arraySum = (input: Input): number => {
   let sum = 0;

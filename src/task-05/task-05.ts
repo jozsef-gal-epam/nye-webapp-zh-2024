@@ -1,54 +1,54 @@
 import { Movie, Genre, SearchParams, SearchResults, OrderBy, Direction } from './models';
 import { MovieService } from './services';
-//5
 
-const DEFAULT_LIMIT = 12;
-const DEFAULT_OFFSET = 0;
-const DEFAULT_ORDER_BY: OrderBy = 'title';
-const DEFAULT_DIRECTION: Direction = 'ASC';
+const Defaults = {
+  LIMIT: 12,
+  OFFSET: 0,
+  ORDER_BY: 'title',
+  DIRECTION: 'ASC'
+};
 
 export const searchMovies = async (params: SearchParams): Promise<SearchResults> => {
+  const {
+    query = '',
+    genre = [],
+    limit = params.limit ?? Defaults.LIMIT,
+    offset = params.offset ?? Defaults.OFFSET,
+    orderBy = params.orderBy ?? Defaults.ORDER_BY,
+    direction = params.direction ?? Defaults.DIRECTION
+  } = params;
+
   try {
+    let movies = await MovieService.getMovies();
 
-    const query: string = (params.query || '').toLowerCase().trim();
-    const genresToFilter: Genre[] = params.genre || [];
-    const limit: number = params.limit ?? DEFAULT_LIMIT;
-    const offset: number = params.offset ?? DEFAULT_OFFSET;
-    const orderBy: OrderBy = params.orderBy ?? DEFAULT_ORDER_BY;
-    const direction: Direction = params.direction ?? DEFAULT_DIRECTION;
-
-    
-    let movies: Movie[] = await MovieService.getMovies();
-
-   
-    movies = movies.filter(movie => {
-      const titleMatch = movie.title.toLowerCase().includes(query);
-      const descriptionMatch = movie.overview.toLowerCase().includes(query);
-      const genresMatch = movie.genres ? movie.genres.some(genre => genresToFilter.includes(genre)) : false;
-      return (titleMatch || descriptionMatch) && (genresToFilter.length === 0 || genresMatch);
+    const filteredMovies = movies.filter(movie => {
+      const queryMatch = query ? movie.title.toLowerCase().includes(query.toLowerCase()) || movie.overview.toLowerCase().includes(query.toLowerCase()) : true;
+      const genreMatch = genre.length ? movie.genres?.some(movieGenre => genre.includes(movieGenre)) : true;
+      return queryMatch && genreMatch;
     });
 
-   
-movies.sort((a, b) => {
-  if (orderBy === 'title') {
-    return (direction === 'ASC' ? 1 : -1) * a[orderBy].localeCompare(b[orderBy]);
-  } else if (orderBy === 'release_date') {
-    const dateA = new Date(a.release_date);
-    const dateB = new Date(b.release_date);
-    return (direction === 'ASC' ? 1 : -1) * (dateA.getTime() - dateB.getTime());
-  } else { 
-    return (direction === 'ASC' ? 1 : -1) * ((a[orderBy] ?? 0) - (b[orderBy] ?? 0));
-  }
-});
+    const sortedMovies = filteredMovies.sort((a, b) => {
+      if (orderBy === 'title') {
+        return direction === 'ASC' ? a.title.localeCompare(b.title, 'en', {sensitivity: 'base'}) : b.title.localeCompare(a.title, 'en', {sensitivity: 'base'});
+      } else if (orderBy === 'release_date') {
+        return direction === 'ASC' ? new Date(a.release_date).getTime() - new Date(b.release_date).getTime() : new Date(b.release_date).getTime() - new Date(a.release_date).getTime();
+      } else { // orderBy === 'vote_average'
+        const voteA = a.vote_average ?? 0;
+        const voteB = b.vote_average ?? 0;
+        return direction === 'ASC' ? voteA - voteB : voteB - voteA;
+      }
+    });
 
+    const pagedMovies = sortedMovies.slice(offset, offset + limit);
 
-   
-    const slicedMovies: Movie[] = movies.slice(offset, offset + limit);
-    const total: number = movies.length;
-
-    return { total, movies: slicedMovies };
+    return {
+      total: filteredMovies.length,
+      movies: pagedMovies
+    };
   } catch (error) {
-    console.error('An error occurred while searching movies:', error);
+    console.error('Error searching movies', error);
     return { total: 0, movies: [] };
   }
 };
+
+

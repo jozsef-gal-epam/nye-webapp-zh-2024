@@ -2,60 +2,98 @@ import { Points, RPSInput, Shape, Outcome } from './models/rock-paper-scissors';
 
 
 
-function whichShape(shape: string){
+function whichShape(shape: string, outcome: string){
+  let result = 0;
+  //Nyertünk
+  if (outcome === Outcome.WIN){
 
-  if (shape !== undefined) {
-    if (shape === Shape.ROCK) {
-      return Points.get(Shape.ROCK);
-    }else if (shape === Shape.PAPER){
-      return Points.get(Shape.PAPER)
-    }else{
-      return Points.get(Shape.SCISSORS);
+     result = Points.get(Outcome.WIN) || 0;
+
+    //Kő ellen -> papírral
+    if(shape === Shape.ROCK){
+      //papír pontszáma
+      result += Points.get(Shape.PAPER) || 0;
+      return result; //8
+
+    }else if( shape === Shape.PAPER ){
+      //olló pontszáma
+      result += Points.get(Shape.SCISSORS) || 0;
+      return result;//9
+
+    }else if( shape === Shape.SCISSORS){
+      //kő pontszáma
+      result += Points.get(Shape.ROCK) || 0;
+      return result;//7
+
     }
 
-  }else{
-    return 0;
+  }
+
+  //Veszítettünk
+  if(outcome === Outcome.LOOSE){
+    
+    result = Points.get(Outcome.LOOSE) || 0;
+
+    //Kő ellen -> olló
+    if(shape === Shape.ROCK){
+      //olló pontszáma
+      result += Points.get(Shape.SCISSORS) || 0;
+      return result;
+    }
+    //papír ellen -> kő
+    else if( shape === Shape.PAPER ){
+      //kő pontszáma
+      result += Points.get(Shape.ROCK) || 0;
+      return result;
+    }
+    //olló ellen -> papír
+    else if( shape === Shape.SCISSORS){
+      //papír pontszáma
+      result += Points.get(Shape.PAPER) || 0;
+      return result;
+    }
+
+  }
+  //Döntetlen
+  if(outcome === Outcome.DRAW){
+
+    result = Points.get(Outcome.DRAW) || 0;
+
+    //Kő ellen -> kő
+    if(shape === Shape.ROCK){
+      //kő pontszáma
+      result += Points.get(Shape.ROCK) || 0;
+      return result;
+    }else if( shape === Shape.PAPER ){
+      //papír pontszáma
+      result += Points.get(Shape.PAPER) || 0;
+      return result;
+    }else if( shape === Shape.SCISSORS){
+      //olló pontszáma
+      result += Points.get(Shape.SCISSORS) || 0;
+      return result;
+    }
   }
 
 };
 
-function whichOutcome(outcome: string){
-
-  if (outcome !== undefined) {
-    if (outcome === Outcome.WIN) {
-      return Points.get(Outcome.WIN);
-    }else if (outcome === Outcome.LOOSE){
-      return Points.get(Outcome.LOOSE)
-    }else{
-      return Points.get(Outcome.DRAW);
-    }
-
-  }else{
-    return 0;
-  }
-
-};
 
 export const rockPaperScissors = (gameSet: readonly RPSInput[]): number => {
   let gameScore = 0;
 
-  gameSet.forEach( element => {
-    console.log(element.outcome + ": " + whichOutcome(element.outcome));
-    console.log(element.shape + ": " + whichShape(element.shape));
+  gameSet.forEach(turn => {
 
-    let shapeTurn = whichShape(element.shape);
-    let outcomeTurn = whichOutcome(element.outcome);
-    let turn = 0;
-    if (shapeTurn !== undefined && outcomeTurn !== undefined) {
-       turn = shapeTurn + outcomeTurn;
-    }
 
-    console.log('Összeg: ' + turn);
+    //console.log(turn.shape + ", " + turn.outcome + ": " + whichShape(turn.shape, turn.outcome));
+    const turnScore = whichShape(turn.shape, turn.outcome) || 0;
 
-    gameScore += turn;
+    //console.log("Menet: " + turnScore);
 
-    console.log("gameScore: \t" + gameScore);
+    gameScore += turnScore;
+
   });
+
+  //console.log('Game Score: ' + gameScore);
 
   return gameScore;
 };

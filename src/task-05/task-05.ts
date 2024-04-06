@@ -74,7 +74,6 @@ export const searchMovies = async (params: SearchParams): Promise<SearchResults>
       movies: pagnatedMovies
     }
 
-    console.log(filteredMovies);
 
   } catch (error){
     return {

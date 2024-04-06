@@ -1,8 +1,8 @@
 type Input = Array<any>;
 
 export const arraySum = (input: Input): number => {
-  let sum = 0;
-    
+    let sum = 0;
+
     function traverse(input: any[]) {
         input.forEach(item => {
             if (typeof item === 'number' && !isNaN(item)) {
@@ -12,8 +12,8 @@ export const arraySum = (input: Input): number => {
             }
         });
     }
-    
+
     traverse(input);
-    
+
     return sum;
 };

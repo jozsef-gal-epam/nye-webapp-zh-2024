@@ -5,17 +5,17 @@ export interface Item {
 
 export const uniqueFilter = (array: Item[]): Item[] => {
   const uniqueObjects: Item[] = [];
-    const ids = new Set();
-    
-    array.forEach(obj => {
+  const ids = new Set();
 
-        if (!ids.has(obj.id)) {
+  array.forEach(obj => {
 
-            uniqueObjects.push(obj);
+    if (!ids.has(obj.id)) {
 
-            ids.add(obj.id);
-        }
-    });
-    
-    return uniqueObjects;
+      uniqueObjects.push(obj);
+
+      ids.add(obj.id);
+    }
+  });
+
+  return uniqueObjects;
 };

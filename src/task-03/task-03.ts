@@ -1,16 +1,19 @@
-import { Game, Draw } from './models';
+import { Draw, Game } from './models';
 
 export const minimalCubeSet = (games: Game[]): number => {
-    if (!Array.isArray(games) || games.length === 0) {
-        return 0;
-    }
+  let totalScore = 0;
 
-    return games.reduce((totalStrength, game) => {
-        const gameStrength = game.draws.reduce((drawStrength, draw) => {
-            const { red = 0, green = 0, blue = 0 } = draw;
-            const minDrawValue = Math.min(red || Infinity, green || Infinity, blue || Infinity); // Üres húzások esetén a minimális érték legyen Infinity
-            return drawStrength * minDrawValue;
-        }, 1);
-        return totalStrength + gameStrength;
-    }, 0);
+  games.forEach(game => {
+    let red = 0, green = 0, blue = 0;
+
+    game.draws.forEach((draw) => {
+    red = draw.red && draw.red > red ? draw.red : red;
+    green = draw.green && draw.green > green ? draw.green : green;
+    blue = draw.blue && draw.blue > blue ? draw.blue : blue;
+    });
+
+    totalScore += (red * green * blue);
+  });
+
+  return totalScore;
 };

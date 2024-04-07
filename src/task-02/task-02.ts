@@ -4,5 +4,13 @@ export interface Item {
 }
 
 export const uniqueFilter = (array: Item[]): Item[] => {
-  throw new Error('Not implemented');
+  const uniqueItemsMap = new Map<number, Item>();
+
+  for (const item of array) {
+    if (!uniqueItemsMap.has(item.id)) {
+      uniqueItemsMap.set(item.id, item);
+    }
+  }
+
+  return Array.from(uniqueItemsMap.values());
 };

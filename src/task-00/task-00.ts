@@ -1,3 +1,7 @@
-export const oddsAndEvens = (num: number): 'odd' | 'even' => {
-  throw new Error('Not implemented');
-};
+let num: number = 3;
+
+    if(num % 2 == 0){
+        console.log("odd")
+    }else{
+        console.log("even")
+    }

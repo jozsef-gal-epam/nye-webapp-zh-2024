@@ -6,12 +6,16 @@ export const rockPaperScissors = (gameSet: readonly RPSInput[]): number => {
   for (let i = 0; i < gameSet.length; i++) {
     const { shape, outcome } = gameSet[i];
 
-    points += outcome === Outcome.WIN ? 6 + shapePoints(shape) :
-              outcome === Outcome.DRAW ? 3 + shapePoints(shape) :
-              outcome === Outcome.LOOSE ? 0 + shapePoints(shape) : 0;
+    if (outcome === Outcome.WIN) {
+      points += 6 + shapePoints(shape);
+    } else if (outcome === Outcome.DRAW) {
+      points += 3 + shapePoints(shape);
+    } else if (outcome === Outcome.LOOSE) {
+      points += 0 + shapePoints(shape);
+    }
   }
 
-  return points + shapePointsTotal(gameSet);
+  return points + shapePointsTotal(gameSet); // Itt hozzáadjuk az összes játékra vonatkozó pontokat is
 };
 
 const shapePoints = (shape: Shape): number => {

@@ -8,10 +8,9 @@ export const minimalCubeSet = (games: Game[]): number => {
     return games.reduce((totalStrength, game) => {
         const gameStrength = game.draws.reduce((drawStrength, draw) => {
             const { red = 0, green = 0, blue = 0 } = draw;
-            const minDrawValue = Math.min(red, green, blue);
+            const minDrawValue = Math.min(red || Infinity, green || Infinity, blue || Infinity); // Üres húzások esetén a minimális érték legyen Infinity
             return drawStrength * minDrawValue;
         }, 1);
         return totalStrength + gameStrength;
     }, 0);
 };
-

@@ -1,4 +1,4 @@
-import { Movie, Genre, SearchParams, SearchResults, Direction } from './models';
+import { Movie, Genre, SearchParams, SearchResults, OrderBy, Direction } from './models';
 import { MovieService } from './services';
 
 const searchByQuery = async (params: SearchParams): Promise<Movie[]> => {

@@ -1,55 +1,77 @@
-import { RPSInput, Shape, Outcome } from './models/rock-paper-scissors';
-
-export const rockPaperScissors = (gameSet: readonly RPSInput[]): number => {
-  let sum = 0;
-  gameSet.forEach(element => {
-    switch (element.shape) {
-      case Shape.ROCK:
-        switch (element.outcome) {
-          case Outcome.WIN:
-            sum += 8; 
-            break;
-          case Outcome.LOOSE:
-            sum += 3; 
-            break;
-          case Outcome.DRAW:
-            sum += 4; 
-            break;
-        }
-        break;
-      case Shape.PAPER:
-        switch (element.outcome) {
-          case Outcome.WIN:
-            sum += 9; 
-            break;
-          case Outcome.LOOSE:
-            sum += 1; 
-            break;
-          case Outcome.DRAW:
-            sum += 5; 
-            break;
-        }
-        break;
-      case Shape.SCISSORS:
-        switch (element.outcome) {
-          case Outcome.WIN:
-            sum += 7;
-            break;
-          case Outcome.LOOSE:
-            sum += 2; 
-            break;
-          case Outcome.DRAW:
-            sum += 6; 
-            break;
-        }
-        break;
-    }
+import { Movie, Genre, SearchParams, SearchResults, OrderBy, Direction } from './models';
+import { MovieService } from './services';
+const filterMovies = async (params: SearchParams): Promise<Movie[]> => {
+  const movies = await MovieService.getMovies();
+  const filteredMovies = (await movies).filter(movie => {
+    return movie.title.toLowerCase().includes(params.query || '') ||
+           movie.overview?.toLowerCase().includes(params.query || '');
   });
-  return sum;
+  return filteredMovies;
 };
 
-console.log(rockPaperScissors([
-  { shape: Shape.ROCK, outcome: Outcome.DRAW },
-  { shape: Shape.PAPER, outcome: Outcome.LOOSE },
-  { shape: Shape.SCISSORS, outcome: Outcome.WIN },
-]));
+const filterGenre = async (params: SearchParams, filteredMovies: Movie[]): Promise<Movie[]> => {
+  if (params.genre && params.genre.length > 0) {
+    return filteredMovies.filter(movie => {
+      return params.genre?.every(genre => movie.genres?.includes(genre));
+    });
+  } else {
+    return filteredMovies;
+  }
+};
+enum ORDERBY {
+  TITLE = "title",
+  RELEASE_DATE = "release_date",
+  BUDGET = "budget",
+  REVENUE = "revenue",
+  RUNTIME = "runtime"
+}
+
+const sortFiltered = async (params: SearchParams, filteredMovies: Movie[]): Promise<Movie[]> => {
+  if(params.orderBy){
+    switch(params.orderBy){
+      case(ORDERBY.TITLE):
+        filteredMovies.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+  
+      case(ORDERBY.RELEASE_DATE):
+        filteredMovies.sort((a, b) => new Date(a.release_date).getTime() - new Date(b.release_date).getTime());
+        break;
+     
+      default:
+  
+        break;
+    }
+  }
+  
+
+  return filteredMovies;
+};
+
+
+
+
+
+export const searchMovies = async (params: SearchParams): Promise<SearchResults> => {
+  const filtered_query = await filterMovies(params);
+  const filtered_genre = await filterGenre(params, filtered_query);
+  const sorted = await sortFiltered(params, filtered_genre);
+  const total = sorted.length;
+
+  
+  const limited = sorted.slice(params.offset || 0, (params.offset || 0) + (params.limit || 12));
+
+  return {
+    total,
+    movies: limited
+  };
+};
+
+
+console.log(searchMovies({
+  query: 'batman',
+  orderBy: 'vote_average',
+  direction: 'DESC',
+  offset: 0,
+  limit: 5,
+}).then(results => console.log(results))
+.catch(error => console.error(error)))

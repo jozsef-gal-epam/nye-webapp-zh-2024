@@ -15,15 +15,12 @@ export const searchMovies = async (params: SearchParams): Promise<SearchResults>
     const orderBy: string = params.orderBy ?? 'title';
     const direction: string = params.direction ?? 'ASC';
 
-    //title filter
-    let filteredMovies = movies.filter(movie =>{
+    const filteredMovies = movies.filter(movie => {
+
       const lcQuery = params.query?.toLowerCase() || '';
       let resultArr = [];
-
-      if(movie.title.toLowerCase().includes(lcQuery)){
+      if(movie.title.toLowerCase().includes(lcQuery) || movie.overview.toLocaleLowerCase().includes(lcQuery)){
         resultArr.push(movie);
-      }else if(movie.overview.toLowerCase().includes(lcQuery)){
-        resultArr.push(movie);  
       }else{
         resultArr = movies;
       }
@@ -55,11 +52,17 @@ export const searchMovies = async (params: SearchParams): Promise<SearchResults>
       let result = 0;
 
       if(orderBy === 'title'){
+
         result = (a.title).localeCompare(b.title);
+
       }else if(orderBy === 'release_date'){
+
         result = a.release_date.getTime() - b.release_date.getTime();
+
       }else if(orderBy === 'vote_average'){
-        result = (a.vote_average ?? 0) - (b.vote_average ?? 0);
+
+        result = (b.vote_average ?? 0) - (a.vote_average ?? 0);
+
       }
 
       return direction === 'ASC' ? result : -result;
@@ -68,9 +71,18 @@ export const searchMovies = async (params: SearchParams): Promise<SearchResults>
 
     let pagnatedMovies = orderedMovies.slice(offset, offset + limit);
 
+    console.log(pagnatedMovies);
+
+    let num_rows = 0;
+
+    if(!pagnatedMovies){
+      num_rows = filteredMovies.length;
+    }else{
+      num_rows = pagnatedMovies.length;
+    }
 
     return {
-      total: pagnatedMovies.length,
+      total: filteredMovies.length,
       movies: pagnatedMovies
     }
 
